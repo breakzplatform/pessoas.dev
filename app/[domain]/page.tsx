@@ -116,7 +116,7 @@ export default async function IndexPage({
           <h2>Feito pra quem fala post e não skeet. É grátis e sem custo nenhum.</h2>
         }
         <p className="max-w-[700px] text-lg text-muted-foreground sm:text-xl">
-          Siga o passo-a-passo à seguir para ter seu usuário <strong>{domain}</strong>
+          Siga o passo-a-passo a seguir para ter seu usuário <strong>{domain}</strong>
         </p>
       </div>
       <div>
