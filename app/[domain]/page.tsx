@@ -106,7 +106,7 @@ export default async function IndexPage({
         <h1 className="text-3xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-5xl lg:text-6xl">
           Tenha seu @ personalizado no Bluesky com o <span className="underline underline-offset-8">{domain}</span>
         </h1>
-        <h2>É grátis e sem custo nenhum</h2>
+        <h2>Feito por e para pessoas desenvolvedoras. É grátis e sem custo nenhum</h2>
         <p className="max-w-[700px] text-lg text-muted-foreground sm:text-xl">
           Siga o passo-a-passo à seguir para ter seu usuário <strong>{domain}</strong>
         </p>
@@ -126,20 +126,20 @@ export default async function IndexPage({
                   defaultValue={handle}
                   required
                 />
-                <Button type="submit">Submit</Button>
+                <Button type="submit">Enviar</Button>
               </div>
               <p className="text-sm text-muted-foreground">
                 Informe seu usuário atual, sem o @
               </p>
               {error1 && (
-                <p className="flex flex-row items-center gap-2 text-sm text-red-500">
-                  <X className="h-4 w-4" /> Handle not found - please try again
+                <p className="flex flex-row items-center gap-2 text-sm text-red-400">
+                  <X className="h-4 w-4" /> Conta não encontrada. Verifique e tente novamente.
                 </p>
               )}
               {profile && (
                 <>
                   <p className="text-muted-forground mt-4 flex flex-row items-center gap-2 text-sm">
-                    <Check className="h-4 w-4 text-green-500" /> Account found
+                    <Check className="h-4 w-4 text-green-500" /> Conta encontrada
                   </p>
                   <Profile profile={profile} className="mt-4" />
                 </>
@@ -158,7 +158,7 @@ export default async function IndexPage({
                   placeholder={`exemplo.${domain}`}
                   defaultValue={newHandle}
                 />
-                <Button type="submit">Submit</Button>
+                <Button type="submit">Enviar</Button>
               </div>
               <p className="text-sm text-muted-foreground ">
                 Informe o usuário que deseja ter no {domain}, sem o @
