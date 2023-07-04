@@ -48,6 +48,7 @@ export default async function IndexPage({
       })
       if (!actor.success) throw new Error("fetch was not a success")
       profile = actor.data
+      console.log(profile);
     } catch (e) {
       console.error(e)
       error1 = (e as Error)?.message ?? "unknown error"
@@ -103,32 +104,32 @@ export default async function IndexPage({
     <main className="container grid items-center gap-6 pb-8 pt-6 md:py-10">
       <div className="flex max-w-[980px] flex-col items-start gap-4">
         <h1 className="text-3xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-5xl lg:text-6xl">
-          Get your own {domain} <br className="hidden sm:inline" />
-          handle for Bluesky
+          Tenha seu @ personalizado no Bluesky com o <span className="underline underline-offset-8">{domain}</span>
         </h1>
+        <h2>É grátis e sem custo nenhum</h2>
         <p className="max-w-[700px] text-lg text-muted-foreground sm:text-xl">
-          Follow the instructions below to get your own {domain} handle
+          Siga o passo-a-passo à seguir para ter seu usuário <strong>{domain}</strong>
         </p>
       </div>
       <div>
-        <Stage title="Enter your current handle" number={1}>
+        <Stage title="Informe seu usuário atual no Bluesky" number={1}>
           <form>
-            <div className="grid w-full max-w-sm items-center gap-1.5">
-              <div className="flex w-full max-w-sm items-center space-x-2">
+            <div className="grid w-full max-w-md items-center gap-1.5">
+              <div className="flex w-full max-w-md items-center space-x-2">
                 {newHandle && (
                   <input type="hidden" name="new-handle" value="" />
                 )}
                 <Input
                   type="text"
                   name="handle"
-                  placeholder="example.bsky.social"
+                  placeholder="exemplo.bsky.social"
                   defaultValue={handle}
                   required
                 />
                 <Button type="submit">Submit</Button>
               </div>
               <p className="text-sm text-muted-foreground">
-                Enter your current handle, not including the @
+                Informe seu usuário atual, sem o @
               </p>
               {error1 && (
                 <p className="flex flex-row items-center gap-2 text-sm text-red-500">
@@ -146,22 +147,21 @@ export default async function IndexPage({
             </div>
           </form>
         </Stage>
-        <Stage title="Choose your new handle" number={2} disabled={!profile}>
+        <Stage title="Escolha seu novo usuário" number={2} disabled={!profile}>
           <form>
             <input type="hidden" name="handle" value={handle} />
-            <div className="grid w-full max-w-sm items-center gap-1.5">
-              <div className="flex w-full max-w-sm items-center space-x-2">
+            <div className="grid w-full max-w-md items-center gap-1.5">
+              <div className="flex w-full max-w-md items-center space-x-2">
                 <Input
                   type="text"
                   name="new-handle"
-                  placeholder={`example.${domain}`}
+                  placeholder={`exemplo.${domain}`}
                   defaultValue={newHandle}
                 />
                 <Button type="submit">Submit</Button>
               </div>
               <p className="text-sm text-muted-foreground ">
-                Enter the {domain} handle that you would like to have, not
-                including the @
+                Informe o usuário que deseja ter no {domain}, sem o @
               </p>
               {error2 && (
                 <p className="text-sm text-red-500">
@@ -181,23 +181,16 @@ export default async function IndexPage({
           </form>
         </Stage>
         <Stage
-          title="Change your handle within the Bluesky app"
+          title="Altere seu @ no Bluesky"
           number={3}
           disabled={!newHandle || !!error2}
           last
         >
           <p className="max-w-lg text-sm">
-            Go to Settings {">"} Advanced {">"} Change my handle. Select &quot;I
-            have my own domain&quot; and enter{" "}
-            {newHandle ? `"${newHandle}"` : "your new handle"}. Finally, tap
-            &quot;Verify DNS Record&quot;.
-          </p>
-          <p className="mt-6 max-w-lg text-sm">
-            If you like this project, consider{" "}
-            <a href="#" className="underline">
-              sponsoring my work
-            </a>
-            .
+            Vá em <strong>Settings {">"} Advanced {">"} Change my handle</strong>. Selecione <strong>&quot;I
+            have my own domain&quot;</strong> e digite {" "}
+            {newHandle ? `"<strong>${newHandle}</strong>"` : "seu novo @"}. Por fim, aperte em
+            {" "}<strong>&quot;Verify DNS Record&quot;</strong>.
           </p>
         </Stage>
       </div>
