@@ -52,21 +52,20 @@ export default async function CommunityPage({ params }: Props) {
     <main className="container grid items-center gap-6 pb-8 pt-6 md:py-10">
       <div className="flex max-w-[980px] flex-col items-start gap-4">
         <h1 className="text-3xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-5xl lg:text-6xl">
-          The {domain.name} <br className="hidden sm:inline" />
-          community
+          Comunidade <span className="underline underline-offset-8">{domain.name}</span>
         </h1>
-        <p className="max-w-[500px] text-lg text-muted-foreground sm:text-xl">
+        {/* <p className="max-w-[500px] text-lg text-muted-foreground sm:text-xl">
           Want to join the {members.length} members of the {domain.name}{" "}
           community? Get your own{" "}
           <Link href="/" className="underline">
             {domain.name} handle
           </Link>
           .
-        </p>
+        </p> */}
         <Tabs defaultValue="domain" className="mt-8">
           <TabsList>
-            <TabsTrigger value="domain">{domain.name} handles</TabsTrigger>
-            <TabsTrigger value="all">all</TabsTrigger>
+            <TabsTrigger value="domain">{domain.name}</TabsTrigger>
+            <TabsTrigger value="all">todos</TabsTrigger>
           </TabsList>
           <TabsContent value="domain">
             <div className="mt-6 grid w-full grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
