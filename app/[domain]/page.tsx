@@ -106,7 +106,14 @@ export default async function IndexPage({
         <h1 className="text-3xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-5xl lg:text-6xl">
           Tenha seu @ personalizado no Bluesky com o <span className="underline underline-offset-8">{domain}</span>
         </h1>
-        <h2>Feito por e para pessoas desenvolvedoras. É grátis e sem custo nenhum</h2>
+        {
+          (domain == 'pessoas.dev') && 
+          <h2>Feito por e para pessoas desenvolvedoras. É grátis e sem custo nenhum.</h2>
+        }
+        {
+          (domain == 'ceuazul.online') && 
+          <h2>Feito pra quem fala post e não skeet. É grátis e sem custo nenhum.</h2>
+        }
         <p className="max-w-[700px] text-lg text-muted-foreground sm:text-xl">
           Siga o passo-a-passo à seguir para ter seu usuário <strong>{domain}</strong>
         </p>
@@ -194,6 +201,7 @@ export default async function IndexPage({
           </p>
         </Stage>
       </div>
+      <p className="text-xs">Diretamente de Pernambuco por <a href="https://joseli.to">Joselito</a>, com muito amor e carinho.</p>
     </main>
   )
 }
