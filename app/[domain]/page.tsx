@@ -101,6 +101,7 @@ export default async function IndexPage({
   }
 
   return (
+    <>
     <main className="container grid items-center gap-6 pb-8 pt-6 md:py-10">
       <div className="flex max-w-[980px] flex-col items-start gap-4">
         <h1 className="text-3xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-5xl lg:text-6xl">
@@ -201,7 +202,11 @@ export default async function IndexPage({
           </p>
         </Stage>
       </div>
-      <p className="text-xs">Diretamente de Pernambuco por <a href="https://joseli.to">Joselito</a>, com muito amor e carinho.</p>
     </main>
+    <footer className="container grid items-center gap-2">
+      <p className="text-sm">Diretamente de Pernambuco por <a className="bold underline underline-offset-4" href="https://joseli.to">Joselito</a>, com muito amor e carinho.</p>
+      <p className="text-xs text-gray-400">Este site não útiliza nenhum cookie nem coleta absolutamente nenhum dado.</p>
+    </footer>
+    </>
   )
 }
