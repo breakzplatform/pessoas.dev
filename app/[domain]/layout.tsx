@@ -14,7 +14,7 @@ export default function DomainLayout({ children, params }: Props) {
   const domain = params.domain
   return (
     <>
-      <Fragment>
+      {/* <Fragment>
         <head>
           <meta
             property="og:image"
@@ -29,7 +29,7 @@ export default function DomainLayout({ children, params }: Props) {
       href="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;text y=%22.9em%22 font-size=%2290%22&gt;🦋&lt;/text&gt;&lt;/svg&gt;"
     />
         </head>
-      </Fragment>
+      </Fragment> */}
       <SiteHeader items={siteConfig.mainNav}>
         <MainNav title={params.domain} items={siteConfig.mainNav} />
       </SiteHeader>
