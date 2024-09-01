@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils"
 
 interface Props {
-  number: number
+  number: number | string
   title: string
   disabled?: boolean
   last?: boolean
@@ -10,9 +10,9 @@ interface Props {
 
 export function Stage({ number, title, disabled, last, children }: Props) {
   return (
-    <section className={cn(disabled && "opacity-50")}>
-      <div className="flex h-8 flex-row items-center">
-        <div className="mr-4 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-slate-100 text-center dark:bg-slate-800">
+    <section className={cn(disabled && "opacity-10")}>
+      <div className="flex flex-row items-center h-8">
+        <div className="grid place-items-center mr-4 text-center rounded-full size-8 shrink-0 bg-slate-100 dark:bg-slate-800">
           {number}
         </div>
         <h2 className="font-semibold">{title}</h2>

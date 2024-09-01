@@ -6,12 +6,15 @@ export const siteConfig = {
       title: "Diretório",
       href: "/pessoas",
     },
-    // {
-    //   title: "Create your own community handle",
-    //   href: "/create-your-own",
-    // },
+    {
+      title: "FAQ",
+      href: "/perguntas",
+    },
   ],
   links: {
-    github: "https://github.com/breakzplatform",
+    home: "https://joseli.to",
+    notx: "https://notx.blue",
+    bluesky: "https://bsky.app/profile/joseli.to",
+    github: "https://github.com/breakzplatform/pessoas.dev",
   },
 }
