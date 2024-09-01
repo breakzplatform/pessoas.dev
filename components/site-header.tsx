@@ -73,7 +73,7 @@ export function SiteHeader({ children }: Props) {
 
   return (
     <>
-      <header className="sticky top-0 z-40 w-full border-b bg-background">
+      <header className="sticky top-0 z-40 w-full border-b bg-background" suppressHydrationWarning>
         <div className="container flex justify-between items-center space-x-4 h-16 sm:space-x-0">
           {children}
           <div>

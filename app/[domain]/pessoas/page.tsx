@@ -15,8 +15,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const domain = params.domain
 
   return {
-    title: `The ${domain} Community`,
-    description: `See all the members of the ${domain} community.`,
+    title: `Diretório • ${domain}`,
+    description: `Veja as pessoas que utilizam o ${domain}.`,
   }
 }
 

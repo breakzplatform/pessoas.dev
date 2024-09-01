@@ -1,4 +1,5 @@
 import { ArrowRight } from "lucide-react"
+import { type Metadata } from "next"
 
 import { Button, buttonVariants } from "@/components/ui/button"
 import {
@@ -10,11 +11,14 @@ import {
 } from "@/components/ui/dialog"
 import { Stage } from "@/components/stage"
 
-export const metadata = {
-  title: "Create a Community Handle for your community",
-  description: "Host your own tool",
-}
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const domain = params.domain
 
+  return {
+    title: `Perguntas • ${domain}`,
+    description: `Veja as pessoas que utilizam o ${domain}.`,
+  }
+}
 interface Props {
   params: { domain: string }
 }
@@ -56,7 +60,7 @@ export default function CommunityPage({ params }: Props) {
         </Stage>
         <Stage title="Por quanto tempo eu posso ter um usuário personalizado?" number={"❔"} last>
           <p className="max-w-lg">
-          <strong>No momento, pra sempre.</strong> Por pra sempre, entenda-se "enquanto eu conseguir manter isso aqui funcionando". No momento, os custos são irrisórios e morrer não está nos meus planos.
+          <strong>No momento, pra sempre.</strong> Por pra sempre, entenda-se &quot;enquanto eu conseguir manter isso aqui funcionando&quot;. No momento, os custos são irrisórios e morrer não está nos meus planos.
           </p>
         </Stage>
         <Stage title="Tenho um domínio e queria um site igual a esse, como faço?" number={"❔"} last>
