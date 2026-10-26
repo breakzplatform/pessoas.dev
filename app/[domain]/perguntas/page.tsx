@@ -73,7 +73,7 @@ export default function CommunityPage({ params }: Props) {
             Se são dúvidas simples, posso tentar resolvê-las via Chat no Bluesky, sem compromisso.
           </p>
           <p className="max-w-lg">
-            Caso tenha interesse em fazer algo profissional, com direcionamento e suporte inicial, entre em contato pelo email consultoria@joselil.to para negociarmos os valores dependendo de suas necessidades. Para um único domínio, os valores se iniciam em R$ 3000,00 (possíveis custos recorrentes não inclusos).
+            Caso tenha interesse em fazer algo profissional, com direcionamento e suporte inicial, entre em contato pelo email consultoria@joseli.to para negociarmos os valores dependendo de suas necessidades. Para um único domínio, os valores se iniciam em R$ 3000,00 (possíveis custos recorrentes não inclusos).
           </p>
         </Stage>
         <Stage title="Achei caro, você é mercenário por acaso?" number={"❔"} last>
