@@ -2,46 +2,44 @@ import { AppBskyActorDefs } from "@atproto/api"
 import { Check, X } from "lucide-react"
 
 import { agent } from "@/lib/atproto"
-import { prisma } from "@/lib/db"
-import { hasExplicitSlur } from "@/lib/slurs"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Profile } from "@/components/profile"
 import { Stage } from "@/components/stage"
 
-export function generateMetadata({ params }: { params: { domain: string } }) {
-  const domain = params.domain
+import { registerHandle } from "./actions"
+
+interface Props {
+  params: Promise<{ domain: string }>
+  searchParams: Promise<{
+    handle?: string
+    "new-handle"?: string
+    result?: string
+  }>
+}
+
+export async function generateMetadata({ params }: Props) {
+  const { domain } = await params
   return {
     title: `${domain} - Seu @ personalizado no Bluesky`,
     description: `'Tenha seu usuário ${domain}`,
   }
 }
 
-export default async function IndexPage({
-  params,
-  searchParams,
-}: {
-  params: {
-    domain: string
-  }
-  searchParams: {
-    handle?: string
-    "new-handle"?: string
-  }
-}) {
-  const domain = params.domain
-  let handle = searchParams.handle
-  let newHandle = searchParams["new-handle"]
-  let profile: AppBskyActorDefs.ProfileView | undefined
+export default async function IndexPage({ params, searchParams }: Props) {
+  const { domain } = await params
+  const query = await searchParams
+  const { "new-handle": newHandle, result } = query
+  let handle = query.handle
+  let profile: AppBskyActorDefs.ProfileViewDetailed | undefined
   let error1: string | undefined
-  let error2: string | undefined
+  const error2 = result && result !== "ok" ? result : undefined
 
   if (handle) {
     try {
       if (!handle.includes(".")) {
         handle += ".bsky.social"
       }
-      // console.log("fetching profile", handle)
       const actor = await agent.getProfile({
         actor: handle,
       })
@@ -50,59 +48,6 @@ export default async function IndexPage({
     } catch (e) {
       console.error(e)
       error1 = (e as Error)?.message ?? "unknown error"
-    }
-
-    if (newHandle && profile) {
-      newHandle = newHandle.trim().toLowerCase()
-      if (!newHandle.includes(".")) {
-        newHandle += "." + domain
-      }
-      if (!error1) {
-        // regex: (alphanumeric, -, _).(domain)
-        const validHandle = newHandle.match(
-          new RegExp(`^[a-zA-Z0-9-_]+.${domain}$`)
-        )
-        if (validHandle) {
-          try {
-            const handle = newHandle.replace(`.${domain}`, "")
-            if (hasExplicitSlur(handle) || BLOCKED.includes(handle)) {
-              throw new Error("slur")
-            }
-
-            if (domain === "pessoas.dev" && RESERVED.includes(handle)) {
-              throw new Error("reserved")
-            }
-
-            const existing = await prisma.user.findFirst({
-              where: { handle },
-              include: { domain: true },
-            })
-            if (existing && existing.domain.name === domain) {
-              if (existing.did !== profile.did) {
-                error2 = "handle taken"
-              }
-            } else {
-              await prisma.user.create({
-                data: {
-                  handle,
-                  did: profile.did,
-                  domain: {
-                    connectOrCreate: {
-                      where: { name: domain },
-                      create: { name: domain },
-                    },
-                  },
-                },
-              })
-            }
-          } catch (e) {
-            console.error(e)
-            error2 = (e as Error)?.message ?? "unknown error"
-          }
-        } else {
-          error2 = "invalid handle"
-        }
-      }
     }
   }
 
@@ -173,7 +118,8 @@ export default async function IndexPage({
             number={2}
             disabled={!profile}
           >
-            <form>
+            <form action={registerHandle}>
+              <input type="hidden" name="domain" value={domain} />
               <input type="hidden" name="handle" value={handle} />
               <div className="grid w-full max-w-md items-center gap-1.5">
                 <div className="flex items-center space-x-2 w-full max-w-md">
@@ -195,10 +141,13 @@ export default async function IndexPage({
                         case "handle taken":
                           return "Usuário indisponível pois já está sendo utilizado"
                         case "invalid handle":
+                        case "invalid domain":
                         case "slur":
                           return "Usuário inválido, tente novamente"
                         case "reserved":
                           return "Usuário reservado, tente novamente"
+                        case "account not found":
+                          return "Conta não encontrada. Verifique e tente novamente."
                         default:
                           return "Ocorreu um erro desconhecido, tente novamente mais tarde"
                       }
@@ -211,7 +160,7 @@ export default async function IndexPage({
           <Stage
             title="Altere seu @ no Bluesky"
             number={3}
-            disabled={!newHandle || !!error2}
+            disabled={result !== "ok"}
             last
           >
             <p className="max-w-lg text-sm">
@@ -250,7 +199,3 @@ export default async function IndexPage({
     </div>
   )
 }
-
-const RESERVED = ["joselito"].map((x) => x.toLowerCase())
-
-const BLOCKED = ["bolsonaro", "trump"].map((x) => x.toLowerCase())
