@@ -24,11 +24,10 @@ export const viewport: Viewport = {
 }
 
 interface RootLayoutProps {
-  children: React.ReactNode,
-  params: { domain: string }
+  children: React.ReactNode
 }
 
-export default function RootLayout({ children, params }: RootLayoutProps) {
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <>
       <html lang="en" suppressHydrationWarning>

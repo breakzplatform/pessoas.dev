@@ -14,9 +14,9 @@ export const runtime = "edge"
 export default async function og({
   params,
 }: {
-  params: { domain: string; handle: string }
+  params: Promise<{ domain: string; handle: string }>
 }) {
-  const { domain, handle } = params
+  const { domain, handle } = await params
 
   const {
     data: { did },

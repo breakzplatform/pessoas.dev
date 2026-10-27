@@ -1,17 +1,14 @@
-import Head from "next/head"
-import { Fragment } from 'react';
-
 import { siteConfig } from "@/config/site"
 import { MainNav } from "@/components/main-nav"
 import { SiteHeader } from "@/components/site-header"
 
 interface Props {
   children: React.ReactNode
-  params: { domain: string }
+  params: Promise<{ domain: string }>
 }
 
-export default function DomainLayout({ children, params }: Props) {
-  const domain = params.domain
+export default async function DomainLayout({ children, params }: Props) {
+  const { domain } = await params
   return (
     <>
       {/* <Fragment>
@@ -31,7 +28,7 @@ export default function DomainLayout({ children, params }: Props) {
         </head>
       </Fragment> */}
       <SiteHeader items={siteConfig.mainNav}>
-        <MainNav title={params.domain} items={siteConfig.mainNav} />
+        <MainNav title={domain} items={siteConfig.mainNav} />
       </SiteHeader>
       <div className="flex flex-col flex-1">{children}</div>
     </>

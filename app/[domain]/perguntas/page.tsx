@@ -12,7 +12,7 @@ import {
 import { Stage } from "@/components/stage"
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const domain = params.domain
+  const { domain } = await params
 
   return {
     title: `Perguntas • ${domain}`,
@@ -20,12 +20,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 interface Props {
-  params: { domain: string }
+  params: Promise<{ domain: string }>
 }
 
-export default function CommunityPage({ params }: Props) {
-
-  const domain = params.domain
+export default async function CommunityPage({ params }: Props) {
+  const { domain } = await params
 
   return (
     <main className="container grid gap-6 items-center pt-6 pb-8 md:py-10">

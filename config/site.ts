@@ -1,6 +1,7 @@
 export type SiteConfig = typeof siteConfig
 
 export const siteConfig = {
+  domains: ["pessoas.dev", "ceuazul.online", "codafofo.xyz"],
   mainNav: [
     {
       title: "Diretório",

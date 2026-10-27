@@ -1,11 +1,14 @@
 import { NextResponse, type NextRequest } from "next/server"
 
-import { getDomain } from "./lib/utils"
+import { getDomain } from "@/lib/utils"
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const url = new URL(request.url)
+  // request.url can carry the server's own address instead of the requested
+  // host (it does under `next start` on Next 16), so read the Host header.
+  const host = request.headers.get("host")?.replace(/:\d+$/, "") ?? url.hostname
 
-  const { domain, subdomain } = getDomain(url.hostname)
+  const { domain, subdomain } = getDomain(host)
 
   if (domain) {
     if (subdomain && subdomain !== process.env.LANDING_SUBDOMAIN) {
