@@ -37,9 +37,8 @@ async function load() {
     throw new Error("Profile not found")
   })
   const { register } = await import("@/lib/register")
-  const { GET } = await import(
-    "@/app/[domain]/[handle]/.well-known/atproto-did/route"
-  )
+  const { GET } =
+    await import("@/app/[domain]/[handle]/.well-known/atproto-did/route")
   return { register, GET }
 }
 
@@ -115,6 +114,8 @@ describe("register", () => {
     ["a".repeat(64), "invalid handle"],
     ["", "invalid handle"],
     ["joselito", "reserved"],
+    ["pessoas", "reserved"],
+    ["privacy", "reserved"],
     ["bolsonaro", "slur"],
   ])(
     "rejects %j with %s and leaves the cache alone",

@@ -22,6 +22,10 @@ export interface RegisterResult {
 
 const RESERVED = ["joselito"]
 
+// Page routes on every domain: a handle subdomain with one of these names
+// would be routed to the page instead of to its atproto-did.
+const ROUTE_NAMES = ["pessoas", "perguntas", "privacidade", "privacy"]
+
 const BLOCKED = ["bolsonaro", "trump"]
 
 // A single DNS label, as atproto handles require: no underscores, no leading
@@ -50,7 +54,10 @@ export async function register({
     : ""
   if (!LABEL.test(handle)) return reply("invalid handle")
   if (hasExplicitSlur(handle) || BLOCKED.includes(handle)) return reply("slur")
-  if (domain === "pessoas.dev" && RESERVED.includes(handle)) {
+  if (
+    ROUTE_NAMES.includes(handle) ||
+    (domain === "pessoas.dev" && RESERVED.includes(handle))
+  ) {
     return reply("reserved")
   }
 
