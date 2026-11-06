@@ -1,11 +1,4 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
-
 import { siteConfig } from "@/config/site"
-
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
-}
 
 // Hosts outside the served domains (localhost, *.vercel.app previews) get no
 // domain, so their paths are routed as-is: /pessoas.dev/<handle>/... works.

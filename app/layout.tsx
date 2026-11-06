@@ -1,53 +1,49 @@
 import { type Metadata, type Viewport } from "next"
-import { Analytics } from "@vercel/analytics/react"
-
-import { fontSans } from "@/lib/fonts"
-import { cn } from "@/lib/utils"
-import { TailwindIndicator } from "@/components/tailwind-indicator"
-import { ThemeProvider } from "@/components/theme-provider"
 
 import "@/styles/globals.css"
 
 export const metadata: Metadata = {
-  icons: {
-    // icon: "/favicon.ico",
-    // shortcut: "/favicon-16x16.png",
-    // apple: "/apple-touch-icon.png",
-  },
+  icons: { icon: "/favicon.svg" },
 }
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "white" },
-    { media: "(prefers-color-scheme: dark)", color: "black" },
-  ],
+  themeColor: "#F4F1EA",
 }
 
-interface RootLayoutProps {
+// Runs before first paint. Theme is manual (light by default, never
+// prefers-color-scheme), as everywhere in the notx.blue family. Language is
+// the stored choice, else English on /privacy or for English browsers, else
+// Portuguese.
+const BOOT = `(() => {
+  const root = document.documentElement
+  let theme, lang
+  try { theme = localStorage.getItem("theme"); lang = localStorage.getItem("lang") } catch {}
+  root.dataset.theme = ["light", "dark", "terminal"].includes(theme) ? theme : "light"
+  if (lang !== "en" && lang !== "pt-BR") {
+    const english = location.pathname.endsWith("/privacy") ||
+      String(navigator.language).toLowerCase().startsWith("en")
+    lang = english ? "en" : "pt-BR"
+  }
+  root.dataset.lang = lang
+  root.lang = lang
+})()`
+
+export default function RootLayout({
+  children,
+}: {
   children: React.ReactNode
-}
-
-export default function RootLayout({ children }: RootLayoutProps) {
+}) {
   return (
-    <>
-      <html lang="en" suppressHydrationWarning>
-        <head>
-          <Analytics />
-        </head>
-        <body
-          className={cn(
-            "min-h-screen bg-background font-sans antialiased",
-            fontSans.variable
-          )}
-        >
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <div className="flex relative flex-col min-h-screen">
-              {children}
-            </div>
-            <TailwindIndicator />
-          </ThemeProvider>
-        </body>
-      </html>
-    </>
+    <html lang="pt-BR" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: BOOT }} />
+        <link
+          rel="preconnect"
+          href="https://static.joseli.to"
+          crossOrigin="anonymous"
+        />
+      </head>
+      <body>{children}</body>
+    </html>
   )
 }

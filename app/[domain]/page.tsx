@@ -1,11 +1,14 @@
 import { AppBskyActorDefs } from "@atproto/api"
-import { Check, X } from "lucide-react"
 
+import { copyFor } from "@/config/site"
 import { agent } from "@/lib/atproto"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Profile } from "@/components/profile"
-import { Stage } from "@/components/stage"
+import { Tr, ui, type Localized } from "@/lib/i18n"
+import { pageMetadata } from "@/lib/metadata"
+import { basePath } from "@/lib/paths"
+import type { RegisterStatus } from "@/lib/register"
+import { Faq } from "@/components/faq"
+import { PersonRow } from "@/components/person"
+import { Masthead } from "@/components/site-shell"
 
 import { registerHandle } from "./actions"
 
@@ -18,184 +21,278 @@ interface Props {
   }>
 }
 
+const TITLE = { pt: "Handle de graça no Bluesky", en: "A free Bluesky handle" }
+
 export async function generateMetadata({ params }: Props) {
   const { domain } = await params
-  return {
-    title: `${domain} - Seu @ personalizado no Bluesky`,
-    description: `'Tenha seu usuário ${domain}`,
-  }
+  return pageMetadata(domain, TITLE.pt, copyFor(domain).dek.pt[0])
+}
+
+const REGISTER_ERRORS: Partial<Record<RegisterStatus, Localized<string>>> = {
+  "handle taken": {
+    pt: "Este @ já está em uso.",
+    en: "That handle is already taken.",
+  },
+  "invalid handle": {
+    pt: "Este @ não serve. Tente outro nome.",
+    en: "That handle will not work. Try another name.",
+  },
+  reserved: { pt: "Este @ está reservado.", en: "That handle is reserved." },
+  "account not found": {
+    pt: "Não achei essa conta no Bluesky.",
+    en: "I could not find that account on Bluesky.",
+  },
+}
+REGISTER_ERRORS["invalid domain"] = REGISTER_ERRORS["invalid handle"]
+REGISTER_ERRORS.slur = REGISTER_ERRORS["invalid handle"]
+
+const UNKNOWN_ERROR = {
+  pt: "Algo quebrou do meu lado. Tenta de novo daqui a pouco.",
+  en: "Something broke on my side. Try again in a bit.",
+}
+
+// Accepts "ana", "@ana" and "ana.bsky.social".
+function normalizeActor(input: string) {
+  const actor = input.trim().replace(/^@/, "")
+  return actor.includes(".") ? actor : `${actor}.bsky.social`
 }
 
 export default async function IndexPage({ params, searchParams }: Props) {
   const { domain } = await params
+  const copy = copyFor(domain)
+  const base = await basePath(domain)
   const query = await searchParams
   const { "new-handle": newHandle, result } = query
-  let handle = query.handle
-  let profile: AppBskyActorDefs.ProfileViewDetailed | undefined
-  let error1: string | undefined
-  const error2 = result && result !== "ok" ? result : undefined
+  const handle = query.handle ? normalizeActor(query.handle) : undefined
 
+  let profile: AppBskyActorDefs.ProfileViewDetailed | undefined
+  let lookupFailed = false
   if (handle) {
     try {
-      if (!handle.includes(".")) {
-        handle += ".bsky.social"
-      }
-      const actor = await agent.getProfile({
-        actor: handle,
-      })
-      if (!actor.success) throw new Error("fetch was not a success")
-      profile = actor.data
-    } catch (e) {
-      console.error(e)
-      error1 = (e as Error)?.message ?? "unknown error"
+      profile = (await agent.getProfile({ actor: handle })).data
+    } catch (error) {
+      console.error(error)
+      lookupFailed = true
     }
   }
 
+  const registered = result === "ok"
+  const registerError =
+    result && !registered
+      ? (REGISTER_ERRORS[result as RegisterStatus] ?? UNKNOWN_ERROR)
+      : undefined
+  const suffix = `.${domain}`
+  const requestedName = newHandle?.endsWith(suffix)
+    ? newHandle.slice(0, -suffix.length)
+    : newHandle
+
   return (
-    <div>
-      <main className="container grid gap-6 items-center pt-6 pb-8 md:py-10">
-        <div className="flex max-w-[980px] flex-col items-start gap-4">
-          <h1 className="text-3xl font-extrabold tracking-tighter leading-tight sm:text-3xl md:text-5xl lg:text-6xl">
-            Tenha seu @ personalizado no Bluesky com o{" "}
-            <span className="underline underline-offset-8">{domain}</span>
-          </h1>
-          {domain == "pessoas.dev" && (
-            <h2>
-              Feito por e para pessoas desenvolvedoras. É grátis e sem custo
-              nenhum.
-            </h2>
-          )}
-          {domain == "ceuazul.online" && (
-            <h2>
-              Feito pra quem fala post e não skeet. É grátis e sem custo nenhum.
-            </h2>
-          )}
-          <p className="max-w-[700px] text-lg text-muted-foreground sm:text-xl">
-            Siga o passo-a-passo a seguir para ter seu usuário{" "}
-            <strong>{domain}</strong>
-          </p>
-        </div>
-        <div>
-          <Stage title="Informe seu usuário atual no Bluesky" number={1}>
-            <form>
-              <div className="grid w-full max-w-md items-center gap-1.5">
-                <div className="flex items-center space-x-2 w-full max-w-md">
-                  {newHandle && (
-                    <input type="hidden" name="new-handle" value="" />
-                  )}
-                  <Input
-                    type="text"
-                    name="handle"
-                    placeholder="exemplo.bsky.social"
-                    defaultValue={handle}
-                    required
-                  />
-                  <Button type="submit">Enviar</Button>
+    <>
+      <Masthead domain={domain} base={base} current="home" title={TITLE} />
+
+      <section className="db-panel cast" aria-labelledby="signup-title">
+        <h2 className="db-panel-head" id="signup-title">
+          <Tr pt="Pegar um @" en="Get a handle" />
+        </h2>
+        <div className="db-panel-body">
+          <Tr
+            as="p"
+            className="dek"
+            pt={
+              <>
+                <strong>{copy.dek.pt[0]}</strong>
+                {copy.dek.pt[1]}
+              </>
+            }
+            en={
+              <>
+                <strong>{copy.dek.en[0]}</strong>
+                {copy.dek.en[1]}
+              </>
+            }
+          />
+          <Tr
+            as="p"
+            className="sibling"
+            pt={
+              <>
+                {copy.siblingLine.pt}
+                <a href={`https://${copy.sibling}`}>{copy.sibling}</a>.
+              </>
+            }
+            en={
+              <>
+                {copy.siblingLine.en}
+                <a href={`https://${copy.sibling}`}>{copy.sibling}</a>.
+              </>
+            }
+          />
+
+          <div className="step">
+            <div className="step-num" aria-hidden="true">
+              1
+            </div>
+            <div className="step-body">
+              <h3>
+                <Tr
+                  pt="Informe seu @ atual no Bluesky"
+                  en="Your current Bluesky handle"
+                />
+              </h3>
+              <form>
+                <label htmlFor="handle">
+                  <Tr pt="Seu @ atual" en="Your current handle" />
+                </label>
+                {newHandle && (
+                  <input type="hidden" name="new-handle" value="" />
+                )}
+                <div className="row-input">
+                  <span className="db-field cast">
+                    <input
+                      className="db-input"
+                      id="handle"
+                      name="handle"
+                      type="text"
+                      inputMode="url"
+                      autoComplete="username"
+                      autoCapitalize="none"
+                      spellCheck={false}
+                      placeholder="exemplo.bsky.social"
+                      defaultValue={query.handle}
+                      required
+                    />
+                  </span>
+                  <button
+                    className="db-btn db-btn-primary cast press"
+                    type="submit"
+                  >
+                    <Tr {...ui.send} />
+                  </button>
                 </div>
-                <p className="text-sm text-muted-foreground">
-                  Informe seu usuário atual, sem o @
-                </p>
-                {error1 && (
-                  <p className="flex flex-row gap-2 items-center text-sm text-red-500">
-                    <X className="size-4" /> Conta não encontrada. Verifique e
-                    tente novamente.
-                  </p>
+                <Tr
+                  as="p"
+                  className="help db-note"
+                  pt="Seu @ atual, com ou sem o .bsky.social."
+                  en="Your current handle, with or without .bsky.social."
+                />
+                {lookupFailed && (
+                  <div role="alert">
+                    <Tr
+                      as="p"
+                      className="alert"
+                      {...REGISTER_ERRORS["account not found"]!}
+                    />
+                  </div>
                 )}
                 {profile && (
                   <>
-                    <p className="flex flex-row gap-2 items-center mt-4 text-sm text-muted-forground">
-                      <Check className="text-green-500 size-4" /> Conta
-                      encontrada
-                    </p>
-                    <Profile profile={profile} className="mt-4" />
+                    <div role="status">
+                      <Tr
+                        as="p"
+                        className="status-ok"
+                        pt="conta encontrada"
+                        en="account found"
+                      />
+                    </div>
+                    <PersonRow profile={profile} variant="found" />
                   </>
                 )}
-              </div>
-            </form>
-          </Stage>
-          <Stage
-            title="Escolha seu novo usuário"
-            number={2}
-            disabled={!profile}
-          >
-            <form action={registerHandle}>
-              <input type="hidden" name="domain" value={domain} />
-              <input type="hidden" name="handle" value={handle} />
-              <div className="grid w-full max-w-md items-center gap-1.5">
-                <div className="flex items-center space-x-2 w-full max-w-md">
-                  <Input
-                    type="text"
-                    name="new-handle"
-                    placeholder={`example.${domain}`}
-                    defaultValue={newHandle}
-                  />
-                  <Button type="submit">Enviar</Button>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  Informe o usuário que deseja ter no {domain}, sem o @
-                </p>
-                {error2 && (
-                  <p className="text-sm text-red-500">
-                    {(() => {
-                      switch (error2) {
-                        case "handle taken":
-                          return "Usuário indisponível pois já está sendo utilizado"
-                        case "invalid handle":
-                        case "invalid domain":
-                        case "slur":
-                          return "Usuário inválido, tente novamente"
-                        case "reserved":
-                          return "Usuário reservado, tente novamente"
-                        case "account not found":
-                          return "Conta não encontrada. Verifique e tente novamente."
-                        default:
-                          return "Ocorreu um erro desconhecido, tente novamente mais tarde"
-                      }
-                    })()}
-                  </p>
-                )}
-              </div>
-            </form>
-          </Stage>
-          <Stage
-            title="Altere seu @ no Bluesky"
-            number={3}
-            disabled={result !== "ok"}
-            last
-          >
-            <p className="max-w-lg text-sm">
-              Vá em{" "}
-              <strong>
-                Settings {">"} Advanced {">"} Change my handle
-              </strong>
-              . Selecione <strong>&quot;I have my own domain&quot;</strong> e
-              digite{" "}
-              <span className="font-mono font-bold">
-                {newHandle ? `"${newHandle}"` : "seu novo @"}
-              </span>
-              . Por fim, aperte em{" "}
-              <strong>&quot;Verify DNS Record&quot;</strong>.
-            </p>
-          </Stage>
-        </div>
-      </main>
+              </form>
+            </div>
+          </div>
 
-      <footer className="container grid gap-2 items-center pb-8">
-        <p className="text-sm">
-          Diretamente de Pernambuco por{" "}
-          <a
-            className="underline bold underline-offset-4"
-            href="https://joseli.to"
-          >
-            Joselito
-          </a>
-          , com muito amor e carinho.
-        </p>
-        <p className="text-xs text-gray-400">
-          Este site não utiliza nenhum cookie nem coleta absolutamente nenhum
-          dado.
-        </p>
-      </footer>
-    </div>
+          <div className={profile ? "step" : "step is-disabled"}>
+            <div className="step-num" aria-hidden="true">
+              2
+            </div>
+            <div className="step-body">
+              <h3>
+                <Tr pt="Escolha o novo @" en="Pick the new handle" />
+              </h3>
+              <form action={registerHandle}>
+                <input type="hidden" name="domain" value={domain} />
+                <input type="hidden" name="handle" value={handle ?? ""} />
+                <label htmlFor="new-handle">
+                  <Tr pt="O nome que você quer" en="The name you want" />
+                </label>
+                <div className="row-input">
+                  <span className="suffix-field">
+                    <span className="db-field cast">
+                      <input
+                        className="db-input"
+                        id="new-handle"
+                        name="new-handle"
+                        type="text"
+                        autoCapitalize="none"
+                        spellCheck={false}
+                        placeholder={copy.example}
+                        defaultValue={requestedName}
+                        disabled={!profile}
+                        required
+                      />
+                    </span>
+                    <span className="field-suffix">{suffix}</span>
+                  </span>
+                  <button
+                    className="db-btn db-btn-primary cast press"
+                    type="submit"
+                    disabled={!profile}
+                  >
+                    <Tr {...ui.send} />
+                  </button>
+                </div>
+                <Tr
+                  as="p"
+                  className="help db-note"
+                  pt="Só o nome, sem o @. O sufixo entra sozinho."
+                  en="Just the name, no @. The suffix is added for you."
+                />
+                {registerError && (
+                  <div role="alert">
+                    <Tr as="p" className="alert" {...registerError} />
+                  </div>
+                )}
+              </form>
+            </div>
+          </div>
+
+          <div className={registered ? "step" : "step is-disabled"}>
+            <div className="step-num" aria-hidden="true">
+              3
+            </div>
+            <div className="step-body">
+              <h3>
+                <Tr
+                  pt="Altere o @ no Bluesky"
+                  en="Change the handle on Bluesky"
+                />
+              </h3>
+              <Tr
+                as="p"
+                pt={
+                  <>
+                    Em Ajustes, Advanced, Change my handle. Marque “I have my
+                    own domain”, digite o @ novo e aperte Verify DNS Record.
+                  </>
+                }
+                en={
+                  <>
+                    In Settings, Advanced, Change my handle. Choose “I have my
+                    own domain”, type the new handle, then Verify DNS Record.
+                  </>
+                }
+              />
+              <p className="step-3-handle">
+                {registered && newHandle
+                  ? newHandle
+                  : `${copy.example}${suffix}`}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <Faq />
+    </>
   )
 }

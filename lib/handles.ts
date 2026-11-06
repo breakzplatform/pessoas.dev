@@ -41,10 +41,13 @@ export async function findDid(domain: string, handle: string) {
   )
 }
 
-export async function listDids(domain: string) {
+export async function listDids(domain: string, search = "") {
   domain = domain.toLowerCase()
+  search = search.toLowerCase()
   const handles = await getHandles()
   return handles
-    .filter((record) => record.domain === domain)
+    .filter(
+      (record) => record.domain === domain && record.handle.includes(search)
+    )
     .map((record) => record.did)
 }
