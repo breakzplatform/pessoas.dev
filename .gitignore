@@ -35,3 +35,7 @@ yarn-error.log*
 .contentlayer
 .env
 .vercel
+
+# prune-handles.ts output (DIDs and backups of deleted rows)
+/prune-*.json
+/backups/
