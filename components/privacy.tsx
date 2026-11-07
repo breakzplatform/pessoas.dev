@@ -51,6 +51,22 @@ export async function PrivacyPage({
                   cadastro e de última alteração. Nada mais: nem e-mail, nem
                   senha, nem o seu @ antigo.
                 </p>
+                <p>
+                  Para limitar abusos, cada cadastro também deixa por 24 horas o
+                  DID e um hash do seu IP (nunca o IP em si). Uma conta pode
+                  fazer até 3 cadastros por dia, e uma mesma rede até 10 por
+                  hora.
+                </p>
+                <h3>Login</h3>
+                <p>
+                  Você entra pelo OAuth do Bluesky: a senha é digitada no
+                  próprio Bluesky, nunca aqui. O site pede só a prova de qual
+                  conta é a sua e, se o seu servidor permitir, a permissão de
+                  trocar o seu @ (identity:handle), que é usada apenas quando
+                  você aperta “trocar meu handle agora”. A sessão fica num
+                  cookie criptografado, dura no máximo uma hora e é encerrada
+                  assim que o cadastro termina.
+                </p>
                 <h3>Por quê</h3>
                 <p>
                   O Bluesky confirma um handle perguntando ao domínio qual DID
@@ -61,10 +77,10 @@ export async function PrivacyPage({
                 </p>
                 <h3>O que não tem</h3>
                 <p>
-                  Sem cookies e sem analytics. O tema e o idioma que você
-                  escolhe ficam só no seu navegador (localStorage). Como em
-                  qualquer site, a hospedagem (Vercel) registra acessos por um
-                  tempo curto para operar o serviço.
+                  Sem analytics, e nenhum cookie além do da sessão de login. O
+                  tema e o idioma que você escolhe ficam só no seu navegador
+                  (localStorage). Como em qualquer site, a hospedagem (Vercel)
+                  registra acessos por um tempo curto para operar o serviço.
                 </p>
                 <h3>Como remover</h3>
                 <p>
@@ -85,6 +101,22 @@ export async function PrivacyPage({
                   was registered and last changed. Nothing else: no email, no
                   password, not your old handle.
                 </p>
+                <p>
+                  To limit abuse, each signup also leaves the DID and a hash of
+                  your IP (never the IP itself) for 24 hours. An account can
+                  sign up at most 3 times a day, and one network at most 10
+                  times an hour.
+                </p>
+                <h3>Sign-in</h3>
+                <p>
+                  You sign in with Bluesky&apos;s OAuth: you type your password
+                  on Bluesky itself, never here. The site asks only for proof of
+                  which account is yours and, if your server allows it, the
+                  permission to change your handle (identity:handle), used only
+                  when you press “change my handle now”. The session lives in an
+                  encrypted cookie, lasts an hour at most and is closed as soon
+                  as the signup is done.
+                </p>
                 <h3>Why</h3>
                 <p>
                   Bluesky confirms a handle by asking the domain which DID it
@@ -94,9 +126,10 @@ export async function PrivacyPage({
                 </p>
                 <h3>What is not here</h3>
                 <p>
-                  No cookies and no analytics. The theme and language you pick
-                  stay in your browser (localStorage). Like any site, the host
-                  (Vercel) keeps short-lived access logs to run the service.
+                  No analytics, and no cookie besides the sign-in session. The
+                  theme and language you pick stay in your browser
+                  (localStorage). Like any site, the host (Vercel) keeps
+                  short-lived access logs to run the service.
                 </p>
                 <h3>How to remove it</h3>
                 <p>

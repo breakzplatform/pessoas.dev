@@ -24,6 +24,16 @@ const ITEMS: { q: Localized<string>; a: Localized }[] = [
   },
   {
     q: {
+      pt: "Por que preciso entrar com o Bluesky?",
+      en: "Why do I have to sign in with Bluesky?",
+    },
+    a: {
+      pt: "Para provar que a conta é sua: sem isso, qualquer um podia apontar um nome para a conta de outra pessoa. O login é o OAuth do próprio Bluesky; este site não vê a sua senha. A sessão serve só para o cadastro e, se você deixar, para trocar o @ por você. Depois ela é encerrada.",
+      en: "To prove the account is yours: otherwise anyone could point a name at someone else's account. Sign-in is Bluesky's own OAuth; this site never sees your password. The session is used only for the signup and, if you allow it, to change the handle for you. Then it is closed.",
+    },
+  },
+  {
+    q: {
       pt: "Trocando o @, quem me segue continua me seguindo?",
       en: "If I change my handle, do my followers stay?",
     },

@@ -46,8 +46,8 @@ export const ui = {
   status: { pt: "status", en: "status" },
   source: { pt: "código-fonte", en: "source code" },
   fromBrazil: {
-    pt: "Direto do Brasil pelo Joselito, com muito carinho. Este site não usa cookies nem analytics. Ele guarda o @ que você escolheu e o DID da sua conta, para o Bluesky poder verificar o handle. Não tem relação com o Bluesky.",
-    en: "Directly from Brazil by Joselito, with much love and care. This site uses no cookies and no analytics. It stores the handle you picked and your account's DID, so Bluesky can verify the handle. It is not related to Bluesky.",
+    pt: "Direto do Brasil pelo Joselito, com muito carinho. Este site não usa analytics; o único cookie é o da sessão de login, que dura só o cadastro. Ele guarda o @ que você escolheu e o DID da sua conta, para o Bluesky poder verificar o handle. Não tem relação com o Bluesky.",
+    en: "Directly from Brazil by Joselito, with much love and care. This site uses no analytics; its only cookie is the sign-in session, which lasts just for the signup. It stores the handle you picked and your account's DID, so Bluesky can verify the handle. It is not related to Bluesky.",
   },
   support: { pt: "Apoie", en: "Support" },
   send: { pt: "enviar", en: "submit" },
