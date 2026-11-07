@@ -200,11 +200,11 @@ a.db-btn,a.db-btn:visited,a.db-btn:hover{color:var(--text-1);background:var(--su
 .step.is-disabled .db-btn,.step.is-disabled .db-input{pointer-events:none}
 .alert{margin:10px 0 0;color:var(--status-error);font-size:13.5px}
 .status-ok{margin:10px 0 0;color:var(--status-ok);font-size:13.5px}
-.found{display:grid;grid-template-columns:48px 1fr;gap:10px;align-items:center;margin-top:14px;padding:10px;background:var(--surface-page);border:var(--border)}
+.found{display:grid;grid-template-columns:48px minmax(0,1fr);gap:10px;align-items:center;margin-top:14px;padding:10px;background:var(--surface-page);border:var(--border)}
 .avatar{width:40px;height:40px;display:grid;place-items:center;background:var(--project-ink);color:var(--project-ink-contrast);font:700 16px/1 var(--font-display);border:var(--border)}
 .found .avatar{width:48px;height:48px}
-.found .name{font:700 19px/1.2 var(--font-display);margin:0}
-.found .handle{margin:0;font:400 12.5px/1.4 var(--font-mono);color:var(--text-3)}
+.found .name{font:700 19px/1.2 var(--font-display);margin:0;overflow-wrap:anywhere}
+.found .handle{margin:0;overflow-wrap:anywhere;font:400 12.5px/1.4 var(--font-mono);color:var(--text-3)}
 label{display:block;font:700 13.5px/1.3 var(--font-body);margin:0 0 6px}
 .faq-list{display:flex;flex-direction:column;padding:0;margin:0}
 .faq-item{border-bottom:1px dotted var(--border-dotted)}
@@ -260,6 +260,7 @@ html[data-theme="terminal"] .theme-state[data-when="terminal"]{display:inline-fl
 
 .sibling{margin:-6px 0 22px;color:var(--text-3);font-size:14.5px}
 .step-3-handle{margin-top:10px;font:700 15px/1.4 var(--font-mono);color:var(--text-1);overflow-wrap:anywhere}
+.signout,.switch{margin-top:10px}
 
 .person .avatar{overflow:hidden;padding:0}
 .avatar img{display:block;width:100%;height:100%;object-fit:cover}
