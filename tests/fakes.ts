@@ -9,8 +9,34 @@ export interface Row {
 // In-memory stand-ins for Prisma and the Next Data Cache. The cache honors
 // tags like Next's does, so tests can assert that only a tag invalidation
 // sends reads back to the database.
-export function createFakes(initial: Row[] = []) {
+export interface Attempt {
+  did: string
+  ipHash: string
+  createdAt: Date
+}
+
+interface AttemptWhere {
+  did?: string
+  ipHash?: string
+  createdAt?: { gte?: Date; lt?: Date }
+}
+
+function matches(attempt: Attempt, where: AttemptWhere) {
+  const { gte, lt } = where.createdAt ?? {}
+  return (
+    (where.did === undefined || attempt.did === where.did) &&
+    (where.ipHash === undefined || attempt.ipHash === where.ipHash) &&
+    (gte === undefined || attempt.createdAt >= gte) &&
+    (lt === undefined || attempt.createdAt < lt)
+  )
+}
+
+export function createFakes(
+  initial: Row[] = [],
+  initialAttempts: Attempt[] = []
+) {
   const rows = [...initial]
+  const attempts = [...initialAttempts]
   const cache = new Map<string, { value: unknown; tags: string[] }>()
 
   const prisma = {
@@ -54,6 +80,22 @@ export function createFakes(initial: Row[] = []) {
         }
       ),
     },
+    registration: {
+      count: vi.fn(
+        async ({ where }: { where: AttemptWhere }) =>
+          attempts.filter((a) => matches(a, where)).length
+      ),
+      create: vi.fn(async ({ data }: { data: Attempt }) => {
+        attempts.push({ ...data })
+        return data
+      }),
+      deleteMany: vi.fn(async ({ where }: { where: AttemptWhere }) => {
+        const keep = attempts.filter((a) => !matches(a, where))
+        const count = attempts.length - keep.length
+        attempts.splice(0, attempts.length, ...keep)
+        return { count }
+      }),
+    },
   }
 
   const nextCache = {
@@ -79,5 +121,5 @@ export function createFakes(initial: Row[] = []) {
     }),
   }
 
-  return { rows, prisma, nextCache }
+  return { rows, attempts, prisma, nextCache }
 }

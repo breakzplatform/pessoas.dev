@@ -31,3 +31,16 @@ model User {
 
   @@unique([handle, domainId])
 }
+
+// One row per successful signup, kept for a day, for rate limiting only.
+// ipHash is an HMAC of the client IP, never the IP itself.
+model Registration {
+  id     String @id @default(uuid())
+  did    String
+  ipHash String
+
+  createdAt DateTime @default(now())
+
+  @@index([did, createdAt])
+  @@index([ipHash, createdAt])
+}

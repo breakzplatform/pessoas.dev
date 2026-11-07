@@ -3,7 +3,10 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { createFakes } from "./fakes"
 
 const fakes = vi.hoisted(() => ({}) as ReturnType<typeof createFakes>)
-const agent = vi.hoisted(() => ({ getProfile: vi.fn() }))
+
+const ANA = `did:plc:${"ana".repeat(8)}`
+const MARIA = `did:plc:${"maria".repeat(5).slice(0, 24)}`
+const IP = "ip-hash"
 
 // Getters, because vitest caches mock factories across vi.resetModules().
 vi.mock("@/lib/db", () => ({
@@ -16,26 +19,13 @@ vi.mock("next/cache", () => ({
     (fakes.nextCache.unstable_cache as (...a: unknown[]) => unknown)(...args),
   updateTag: (tag: string) => fakes.nextCache.updateTag(tag),
 }))
-vi.mock("@/lib/atproto", () => ({ agent }))
 
 async function load() {
   vi.resetModules()
   Object.assign(
     fakes,
-    createFakes([
-      { handle: "maria", did: "did:plc:maria", domain: "pessoas.dev" },
-    ])
+    createFakes([{ handle: "maria", did: MARIA, domain: "pessoas.dev" }])
   )
-  agent.getProfile.mockReset()
-  agent.getProfile.mockImplementation(async ({ actor }: { actor: string }) => {
-    if (actor === "ana.bsky.social") {
-      return { success: true, data: { did: "did:plc:ana", handle: actor } }
-    }
-    if (actor === "maria.bsky.social") {
-      return { success: true, data: { did: "did:plc:maria", handle: actor } }
-    }
-    throw new Error("Profile not found")
-  })
   const { register } = await import("@/lib/register")
   const { GET } =
     await import("@/app/[domain]/[handle]/.well-known/atproto-did/route")
@@ -62,7 +52,8 @@ describe("register", () => {
 
     const result = await register({
       domain: "pessoas.dev",
-      actor: "ana.bsky.social",
+      did: ANA,
+      ipHash: IP,
       requested: "Ana",
     })
 
@@ -72,33 +63,48 @@ describe("register", () => {
 
     const res = await verify(GET, "ana")
     expect(res.status).toBe(200)
-    expect(await res.text()).toBe("did:plc:ana")
+    expect(await res.text()).toBe(ANA)
   })
 
   it("accepts the full handle with the domain suffix", async () => {
     const result = await register({
       domain: "pessoas.dev",
-      actor: "ana.bsky.social",
+      did: ANA,
+      ipHash: IP,
       requested: "ana.pessoas.dev",
     })
     expect(result.status).toBe("ok")
   })
 
-  it("takes the DID from the Bluesky profile, not from the form", async () => {
+  it("stores the session DID it was given", async () => {
     await register({
       domain: "pessoas.dev",
-      actor: "ana.bsky.social",
+      did: ANA,
+      ipHash: IP,
       requested: "ana",
     })
-    expect(fakes.prisma.user.create.mock.calls[0][0].data.did).toBe(
-      "did:plc:ana"
-    )
+    expect(fakes.prisma.user.create.mock.calls[0][0].data.did).toBe(ANA)
   })
+
+  it.each([null, "", "ana.bsky.social", "did:plc:short", "did:key:abc"])(
+    "refuses to register without a valid session DID (%j)",
+    async (did) => {
+      const result = await register({
+        domain: "pessoas.dev",
+        did,
+        ipHash: IP,
+        requested: "ana",
+      })
+      expect(result.status).toBe("not signed in")
+      expect(fakes.prisma.user.create).not.toHaveBeenCalled()
+    }
+  )
 
   it("is a no-op when the same account registers its own handle again", async () => {
     const result = await register({
       domain: "pessoas.dev",
-      actor: "maria.bsky.social",
+      did: MARIA,
+      ipHash: IP,
       requested: "maria",
     })
     expect(result.status).toBe("ok")
@@ -122,7 +128,8 @@ describe("register", () => {
     async (requested, status) => {
       const result = await register({
         domain: "pessoas.dev",
-        actor: "ana.bsky.social",
+        did: ANA,
+        ipHash: IP,
         requested,
       })
       expect(result.status).toBe(status)
@@ -131,20 +138,11 @@ describe("register", () => {
     }
   )
 
-  it("rejects an unknown Bluesky account", async () => {
-    const result = await register({
-      domain: "pessoas.dev",
-      actor: "ninguem.bsky.social",
-      requested: "ana",
-    })
-    expect(result.status).toBe("account not found")
-    expect(fakes.prisma.user.create).not.toHaveBeenCalled()
-  })
-
   it("rejects domains the app does not serve", async () => {
     const result = await register({
       domain: "pessoas-dev-git-x.vercel.app",
-      actor: "ana.bsky.social",
+      did: ANA,
+      ipHash: IP,
       requested: "ana",
     })
     expect(result.status).toBe("invalid domain")
@@ -157,7 +155,8 @@ describe("register", () => {
     )
     const result = await register({
       domain: "pessoas.dev",
-      actor: "ana.bsky.social",
+      did: ANA,
+      ipHash: IP,
       requested: "ana",
     })
     expect(result.status).toBe("handle taken")
